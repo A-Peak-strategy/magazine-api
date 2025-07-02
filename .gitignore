@@ -1,0 +1,42 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Firebase
+firebase-debug.log
+.firebase/
+.firebaserc
+
+# VS Code settings
+.vscode/
+
+# Mac system files
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Coverage reports
+coverage/
+
+# Compiled output (if using TypeScript)
+dist/
+build/
+
+# Optional: ignore functions/node_modules if using Firebase functions separately
+functions/node_modules/
+
+# Optional: Ignore serviceAccountKey if present
+serviceAccountKey.json
+
+# Optional: ignore Firebase emulators data
+firebase-emulators/
