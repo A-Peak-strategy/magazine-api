@@ -3,9 +3,23 @@ import { USERS_COLLECTION } from '../models/user.model.js';
 
 const db = admin.firestore();
 
-export const createUser = async (data) => {
-  const docRef = await db.collection(USERS_COLLECTION).add(data);
-  return { id: docRef.id, ...data };
+export const createUser = async (firstname, email, password) => {
+
+  const userRecord = await admin.auth().createUser({
+            email,
+            password,
+            displayName:firstname
+        });
+  if(userRecord){
+            await db.collection(USERS_COLLECTION).doc(userRecord.uid).set({
+                uid: userRecord.uid,
+                email: userRecord.email,
+                fullname: firstname,
+                role : "user",
+                createdAt : new Date()
+            });
+        }
+  return userRecord;
 };
 
 export const getUserByEmail = async (email) => {
