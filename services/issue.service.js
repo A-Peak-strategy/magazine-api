@@ -5,18 +5,18 @@ const db = admin.firestore();
 
 export const createIssue = async (data) => {
   const docRef = await db.collection(ISSUES_COLLECTION).add(data);
-  return { id: docRef.id, ...data };
+  return { id: docRef.id, ...data, status:false };
 };
 
 export const getIssues = async () => {
   const snapshot = await db.collection(ISSUES_COLLECTION).get();
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), status:false }));
 };
 
 export const getIssueById = async (id) => {
   const doc = await db.collection(ISSUES_COLLECTION).doc(id).get();
   if (!doc.exists) return null;
-  return { id: doc.id, ...doc.data() };
+  return { id: doc.id, ...doc.data(), status:false };
 };
 
 export const updateIssue = async (id, data) => {
@@ -26,5 +26,5 @@ export const updateIssue = async (id, data) => {
 
 export const deleteIssue = async (id) => {
   await db.collection(ISSUES_COLLECTION).doc(id).delete();
-  return { id };
+  return { id, status:false };
 }; 
