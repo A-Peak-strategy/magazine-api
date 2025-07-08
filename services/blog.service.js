@@ -4,8 +4,15 @@ import { BLOGS_COLLECTION } from '../models/blog.model.js';
 const db = admin.firestore();
 
 export const createBlog = async (data) => {
-  const docRef = await db.collection(BLOGS_COLLECTION).add(data);
-  return { id: docRef.id, ...data };
+  // Parse JSON strings back to objects/arrays before saving
+  const processedData = {
+    ...data,
+    description: typeof data.description === 'string' ? JSON.parse(data.description) : data.description,
+    variations: typeof data.variations === 'string' ? JSON.parse(data.variations) : data.variations
+  };
+
+  const docRef = await db.collection(BLOGS_COLLECTION).add(processedData);
+  return { id: docRef.id, ...processedData };
 };
 
 export const getBlogs = async () => {
