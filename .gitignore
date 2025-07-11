@@ -40,3 +40,7 @@ serviceAccountKey.json
 
 # Optional: ignore Firebase emulators data
 firebase-emulators/
+
+# mutlar file uploads
+uploads/
+output/
