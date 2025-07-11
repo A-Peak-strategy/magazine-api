@@ -2,6 +2,7 @@ import poppler from 'pdf-poppler';
 import fs from 'fs';
 import path from 'path';
 
+
 const convertPDFToImages = async (pdfPath, outputDir, pdfId) => {
   const options = {
     format: 'jpeg',
@@ -14,7 +15,15 @@ const convertPDFToImages = async (pdfPath, outputDir, pdfId) => {
   await poppler.convert(pdfPath, options);
 
   const files = fs.readdirSync(outputDir).filter((f) => f.endsWith('.jpg'));
-  return files.map((file) => `/images/${pdfId}/${file}`);
+  return files.map((file) =>  path.join(outputDir, file));
+
+    // await poppler.convert(pdfPath, options);
+
+  // const files = fs.readdirSync(outputDir)
+  //   .filter((f) => f.endsWith('.jpg'))
+  //   .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+  // return files.map((file) => path.join(outputDir, file));
 };
 
 export default convertPDFToImages;

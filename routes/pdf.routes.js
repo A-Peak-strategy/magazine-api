@@ -15,6 +15,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Upload PDF and convert to images
-router.post('/upload', upload.single('pdf'), uploadAndConvertPDF);
+router.post(
+  '/upload',
+  upload.fields([
+    { name: 'pdf', maxCount: 1 },
+    { name: 'coverImage', maxCount: 1 },
+  ]),
+  uploadAndConvertPDF
+);
 
 export default router;
