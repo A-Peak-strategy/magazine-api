@@ -81,3 +81,42 @@ export const deleteBlog = async (req, res, next) => {
     next(err);
   }
 };
+
+export const toggleFavoriteBlog = async (req, res) => {
+  try {
+    const { id: blogId } = req.params;
+    const { userId } = req.body;
+
+    const result = await blogService.toggleFavoriteBlogInService(userId, blogId);
+    res.json(result);
+  } catch (err) {
+    console.error('Toggle favorite error:', err.message);
+    res.status(500).json({ error: err.message || 'Something went wrong' });
+  }
+};
+
+export const isBlogFavorited = async (req, res) => {
+  const { blogId, userId } = req.query;
+
+  try {
+    const isFavorited = await blogService.checkIfFavorited(userId, blogId);
+    res.status(200).json({ isFavorited });
+  } catch (error) {
+    console.error('Error in isBlogFavorited:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+export const getFavouriteBlogs = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const blogs = await blogService.fetchFavouriteBlogDetails(userId);
+    res.status(200).json({ favouriteBlogs: blogs });
+  } catch (error) {
+    console.error('Error fetching favourite blogs:', error);
+    res.status(500).json({ error: 'Failed to fetch favourite blogs' });
+  }
+};
+

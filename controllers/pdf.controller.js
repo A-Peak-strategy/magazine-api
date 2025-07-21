@@ -19,7 +19,7 @@ export const uploadAndConvertPDF = async (req, res) => {
     const pdfId = path.parse(pdfPath).name;
     const outputDir = path.join(__dirname, "..", "output", pdfId);
     fs.mkdirSync(outputDir, { recursive: true });
-    
+
     let coverImage = "";
     const coverImagePath = req.files?.coverImage?.[0]?.path;
     if (coverImagePath) {
@@ -42,6 +42,15 @@ export const uploadAndConvertPDF = async (req, res) => {
 
     if (uploadedImageUrls.length === 0) {
       throw new Error("No images were uploaded to Cloudinary");
+    }
+
+    //? delete temporary files
+    try {
+      fs.unlinkSync(pdfPath);
+      fs.unlinkSync(coverImagePath);
+      fs.rmSync(outputDir, { recursive: true, force: true });
+    } catch (cleanupErr) {
+      console.warn('⚠️ Cleanup failed:', cleanupErr.message);
     }
 
     const docRef = await db.collection("issues").add({

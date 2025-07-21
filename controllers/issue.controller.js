@@ -1,5 +1,7 @@
+import { getFirestore } from 'firebase-admin/firestore';
 import * as issueService from '../services/issue.service.js';
-import { uploadBuffer } from '../utils/cloudinary.js';
+import { deleteImageFromCloudinary, uploadBuffer } from '../utils/cloudinary.js';
+const db = getFirestore();
 
 export const createIssue = async (req, res, next) => {
   try {
@@ -58,11 +60,46 @@ export const updateIssue = async (req, res, next) => {
   }
 };
 
-export const deleteIssue = async (req, res, next) => {
+// export const deleteIssue = async (req, res, next) => {
+//   try {
+//     await issueService.deleteIssue(req.params.id);
+//     res.json({ message: 'Issue deleted' });
+//   } catch (err) {
+//     next(err);
+//   }
+// }; 
+
+export const deleteIssue = async (req, res) => {
+  const { id } = req.params;
+
   try {
-    await issueService.deleteIssue(req.params.id);
-    res.json({ message: 'Issue deleted' });
+    const docRef = db.collection('issues').doc(id);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ error: 'Issue not found' });
+    }
+
+    const data = doc.data();
+
+    // Delete cover image
+    if (data.coverImage) {
+      await deleteImageFromCloudinary(data.coverImage);
+    }
+
+    // Delete all page images
+    if (Array.isArray(data.pages)) {
+      for (const url of data.pages) {
+        await deleteImageFromCloudinary(url);
+      }
+    }
+
+    // Delete document
+    await docRef.delete();
+
+    res.json({ success: true, message: 'Issue and images deleted successfully.' });
   } catch (err) {
-    next(err);
+    console.error('❌ Delete failed:', err.message);
+    res.status(500).json({ error: 'Failed to delete issue' });
   }
-}; 
+};
