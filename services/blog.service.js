@@ -35,3 +35,61 @@ export const deleteBlog = async (id) => {
   await db.collection(BLOGS_COLLECTION).doc(id).delete();
   return { id };
 };
+
+export const toggleFavoriteBlogInService = async (userId, blogId) => {
+  const userRef = db.collection('users').doc(userId);
+  const userSnap = await userRef.get();
+
+  if (!userSnap.exists) {
+    throw new Error('User not found');
+  }
+
+  const userData = userSnap.data();
+  const currentFavorites = userData.favouriteBlogs || [];
+
+  if (currentFavorites.includes(blogId)) {
+    await userRef.update({
+      favouriteBlogs: admin.firestore.FieldValue.arrayRemove(blogId),
+    });
+    return { message: 'Removed from favorites', isFavorited: false };
+  } else {
+    await userRef.update({
+      favouriteBlogs: admin.firestore.FieldValue.arrayUnion(blogId),
+    });
+    return { message: 'Added to favorites', isFavorited: true };
+  }
+};
+
+export const checkIfFavorited = async (userId, blogId) => {
+  const userRef = db.collection('users').doc(userId);
+  const doc = await userRef.get();
+
+  if (!doc.exists) throw new Error('User not found');
+
+  const favorites = doc.data().favouriteBlogs || [];
+  return favorites.includes(blogId);
+};
+
+
+export const fetchFavouriteBlogDetails = async (userId) => {
+  const userRef = db.collection('users').doc(userId);
+  const userDoc = await userRef.get();
+
+  if (!userDoc.exists) throw new Error('User not found');
+
+  const favouriteIds = userDoc.data().favouriteBlogs || [];
+
+  if (favouriteIds.length === 0) return [];
+
+  const blogPromises = favouriteIds.map(id =>
+    db.collection('blogs').doc(id).get()
+  );
+
+  const blogDocs = await Promise.all(blogPromises);
+
+  const blogs = blogDocs
+    .filter(doc => doc.exists)
+    .map(doc => ({ id: doc.id, ...doc.data() }));
+
+  return blogs;
+};

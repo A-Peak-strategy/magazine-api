@@ -8,5 +8,7 @@ router.get('/', blogController.getBlogs);
 router.get('/:id', blogController.getBlogById);
 router.put('/:id', upload.array('images', 10), blogController.updateBlog);
 router.delete('/:id', blogController.deleteBlog);
-
+router.post('/:id/favorite', blogController.toggleFavoriteBlog);
+router.post('/is-favorited', blogController.isBlogFavorited);
+router.get('/favourites/:userId', blogController.getFavouriteBlogs);
 export default router; 
