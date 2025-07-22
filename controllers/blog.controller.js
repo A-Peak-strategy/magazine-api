@@ -11,7 +11,7 @@ export const createBlog = async (req, res, next) => {
       images = images.map((img) => img.secure_url);
     }
 
-    const { title, author, description, date, categoryId, categoryName, position, videoURL,excerpt } =
+    const { title, author, description, date, categoryId, categoryName, position, videoURL, excerpt, type } =
       req.body;
 
     const blogData = {
@@ -19,6 +19,7 @@ export const createBlog = async (req, res, next) => {
       author,
       description: JSON.parse(req.body.description),
       date,
+      type,
       categoryId,
       categoryName,
       position,
