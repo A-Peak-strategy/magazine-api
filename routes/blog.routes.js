@@ -11,4 +11,5 @@ router.delete('/:id', blogController.deleteBlog);
 router.post('/:id/favorite', blogController.toggleFavoriteBlog);
 router.post('/is-favorited', blogController.isBlogFavorited);
 router.get('/favourites/:userId', blogController.getFavouriteBlogs);
+router.get('/random/category', blogController.getRandomBlogsByCategory);
 export default router; 
