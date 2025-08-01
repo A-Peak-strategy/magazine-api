@@ -121,3 +121,12 @@ export const getFavouriteBlogs = async (req, res) => {
   }
 };
 
+export const getRandomBlogsByCategory = async (req, res) => {
+    try {
+        const blogs = await blogService.getRandomBlogsByCategory();
+        res.status(200).json({ success: true, blogs });
+    } catch (error) {
+        console.error("Error fetching random blogs:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};

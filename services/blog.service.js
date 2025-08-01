@@ -93,3 +93,25 @@ export const fetchFavouriteBlogDetails = async (userId) => {
 
   return blogs;
 };
+
+export const getRandomBlogsByCategory = async () => {
+    const blogSnapshot = await db.collection("blogs").get();
+    const allBlogs = blogSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    const grouped = {};
+    allBlogs.forEach(blog => {
+        if (!grouped[blog.categoryId]) {
+            grouped[blog.categoryId] = [];
+        }
+        grouped[blog.categoryId].push(blog);
+    });
+
+    const randomBlogs = Object.values(grouped)
+        .map(blogsInCategory => {
+            const randomIndex = Math.floor(Math.random() * blogsInCategory.length);
+            return blogsInCategory[randomIndex];
+        });
+
+    const shuffled = randomBlogs.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 3);
+};
