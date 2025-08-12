@@ -86,3 +86,21 @@ export const fetchSavedIssueDetails = async (userId) => {
 
   return issues;
 };
+
+export const getLatestIssue = async () => {
+  try {
+    const snapshot = await db.collection(ISSUES_COLLECTION)
+      .orderBy('timestamp', 'desc')
+      .limit(1)
+      .get();
+    
+    if (snapshot.empty) {
+      return null;
+    }
+    
+    const doc = snapshot.docs[0];
+    return { id: doc.id, ...doc.data() };
+  } catch (error) {
+    throw new Error(`Failed to fetch latest issue: ${error.message}`);
+  }
+};
