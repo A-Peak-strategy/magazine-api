@@ -103,3 +103,41 @@ export const deleteIssue = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete issue' });
   }
 };
+
+export const toggleSavedIssue = async (req, res) => {
+  try {
+    const { id: issueId } = req.params;
+    const { userId } = req.body;
+
+    const result = await issueService.toggleSavedIssueInService(userId, issueId);
+    res.json(result);
+  } catch (err) {
+    console.error('Toggle favorite error:', err.message);
+    res.status(500).json({ error: err.message || 'Something went wrong' });
+  }
+};
+
+export const isIssueSaved = async (req, res) => {
+  const { issueId, userId } = req.query;
+
+  try {
+    const isSaved = await issueService.checkIfSaved(userId, issueId);
+    res.status(200).json({ isSaved });
+  } catch (error) {
+    console.error('Error in isIssueSaved:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+export const getSavedIssues= async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const issues = await issueService.fetchSavedIssueDetails(userId);
+    res.status(200).json({ savedIssues: issues });
+  } catch (error) {
+    console.error('Error fetching saved issues :', error);
+    res.status(500).json({ error: 'Failed to fetch saved issues' });
+  }
+};
