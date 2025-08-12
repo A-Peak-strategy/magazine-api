@@ -14,5 +14,8 @@ router.put('/:id', upload.fields([
   { name: 'pdf', maxCount: 1 }
 ]), issueController.updateIssue);
 router.delete('/:id', issueController.deleteIssue);
+router.post('/:id/save', issueController.toggleSavedIssue);
+router.post('/is-saved', issueController.isIssueSaved);
+router.get('/saved/:userId', issueController.getSavedIssues );
 
 export default router; 
