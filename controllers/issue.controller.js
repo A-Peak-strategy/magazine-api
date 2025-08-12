@@ -141,3 +141,17 @@ export const getSavedIssues= async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch saved issues' });
   }
 };
+
+export const getLatestIssue = async (req, res, next) => {
+  try {
+    const latestIssue = await issueService.getLatestIssue();
+    
+    if (!latestIssue) {
+      return res.status(404).json({ message: 'No issues found' });
+    }
+    
+    res.json(latestIssue);
+  } catch (err) {
+    next(err);
+  }
+};
