@@ -41,19 +41,48 @@ export const getIssueById = async (req, res, next) => {
   }
 };
 
+// export const updateIssue = async (req, res, next) => {
+//   try {
+//     let coverImage = req.body.coverImage || '';
+//     let pdf = req.body.pdf || '';
+//     if (req.files && req.files.coverImage && req.files.coverImage[0]) {
+//       const result = await uploadBuffer(req.files.coverImage[0].buffer, 'issues');
+//       coverImage = result.secure_url;
+//     }
+//     if (req.files && req.files.pdf && req.files.pdf[0]) {
+//       const result = await uploadBuffer(req.files.pdf[0].buffer, 'issues', 'raw');
+//       pdf = result.secure_url;
+//     }
+//     const issue = await issueService.updateIssue(req.params.id, { ...req.body, coverImage, pdf });
+//     res.json(issue);
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
 export const updateIssue = async (req, res, next) => {
   try {
     let coverImage = req.body.coverImage || '';
     let pdf = req.body.pdf || '';
+
+    // If new cover image uploaded
     if (req.files && req.files.coverImage && req.files.coverImage[0]) {
       const result = await uploadBuffer(req.files.coverImage[0].buffer, 'issues');
       coverImage = result.secure_url;
     }
+
+    // If new PDF uploaded
     if (req.files && req.files.pdf && req.files.pdf[0]) {
       const result = await uploadBuffer(req.files.pdf[0].buffer, 'issues', 'raw');
       pdf = result.secure_url;
     }
-    const issue = await issueService.updateIssue(req.params.id, { ...req.body, coverImage, pdf });
+
+    const issue = await issueService.updateIssue(req.params.id, {
+      ...req.body,
+      coverImage,
+      pdf,
+    });
+
     res.json(issue);
   } catch (err) {
     next(err);
