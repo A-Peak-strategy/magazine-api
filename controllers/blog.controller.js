@@ -36,19 +36,50 @@ export const createBlog = async (req, res, next) => {
   }
 };
 
+// export const updateBlog = async (req, res, next) => {
+//   try {
+//     let images = req.body.images || [];
+//     if (req.files && req.files.length > 0) {
+//       images = await Promise.all(
+//         req.files.map((file) => uploadBuffer(file.buffer, "blogs"))
+//       );
+//       images = images.map((img) => img.secure_url);
+//     }
+//     const blog = await blogService.updateBlog(req.params.id, {
+//       ...req.body,
+//       images,
+//     });
+//     res.json(blog);
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
 export const updateBlog = async (req, res, next) => {
   try {
-    let images = req.body.images || [];
+    let images = [];
+
+    // Keep existing images (sent as JSON string)
+    if (req.body.images) {
+      const parsed = JSON.parse(req.body.images);
+      images = Array.isArray(parsed) ? parsed : [];
+    }
+
+    // Add new uploaded images
     if (req.files && req.files.length > 0) {
-      images = await Promise.all(
+      const uploaded = await Promise.all(
         req.files.map((file) => uploadBuffer(file.buffer, "blogs"))
       );
-      images = images.map((img) => img.secure_url);
+      images.push(...uploaded.map((img) => img.secure_url));
     }
+
     const blog = await blogService.updateBlog(req.params.id, {
       ...req.body,
+      description: JSON.parse(req.body.description || "[]"),
+      variations: JSON.parse(req.body.variations || "[]"),
       images,
     });
+
     res.json(blog);
   } catch (err) {
     next(err);
